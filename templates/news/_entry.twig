@@ -1,0 +1,25 @@
+{#
+ # News entry template
+ # -------------------
+ #}
+
+{% extends "_single" %}
+
+{% block parent_link %}
+	<a class="parent_link" href="{{ siteUrl }}news">Все новости</a>
+{% endblock %}
+
+{% block contentheader_prefix %}
+	{% include 'news/_meta-entry.twig' %}
+{% endblock %}
+
+{# 
+{% block contentheader_suffix %}
+	{% if entry.excerpt %} <h2 class="subhead-info">{{entry.excerpt}}</h2>{% endif %}
+{% endblock %}
+#}
+
+{% block content_prefix %}
+	{{ macros.thumbnail( entry, true, 'post_width' ) }}
+{% endblock %}
+

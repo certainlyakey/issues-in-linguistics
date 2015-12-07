@@ -1,0 +1,7 @@
+<aside class="meta -pubs -single">
+	{% if entry.year|length and entry.issueNumber|length %}
+		<div class="pubdate">{{ entry.year }} #{{ entry.issueNumber }}</div>
+	{% endif %}
+	{{ macros.related_categories( entry, true, 'rubrics', 'rubric-list', 'Рубрики:' ) }}
+	{{ macros.related_categories( entry, true, 'languages', 'rubric-list', 'Языки:' ) }}
+</aside>

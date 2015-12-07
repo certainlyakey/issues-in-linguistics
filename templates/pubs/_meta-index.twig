@@ -1,0 +1,10 @@
+<aside class="meta -pubs -index">
+	{{ macros.related_categories( entry, true, '', 'rubric-list', 'Авторы:', '', entry.authorsList, 'author' ) }}
+	{{ macros.related_categories( entry, true, 'rubrics', 'rubric-list', 'Рубрики:' ) }}
+	{{ macros.related_categories( entry, true, 'languages', 'rubric-list', 'Языки:' ) }}
+	{% if entry.year|length and entry.issueNumber|length %}
+		<div class="pubdate"><span class="name">В номере:</span> {{ entry.year }} #{{ entry.issueNumber }}</div>
+	{% endif %}
+</aside>
+
+{{ macros.related_categories( entry, true, '', 'inline-list keywords', 'Ключевые слова:', '', entry.keywords, 'keyword' ) }}

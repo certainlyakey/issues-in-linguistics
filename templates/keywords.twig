@@ -1,0 +1,19 @@
+{#
+# Keywords tag template
+ # -------------------
+ #
+ #}
+
+{% set tag = craft.tags.group('keywords').title(tag).first() %}
+{% if not tag %}
+	{% exit 404 %}
+{% endif %}
+
+{% extends "pubs/index" %}
+{% block head macros.title( siteName, 'Публикации — ключевое слово ' ~ tag.title ) %}
+{% set body_class_modifiers = "not-main-archive" %}
+{% set pageheading_suffix = ' ключевое слово <em>' ~ tag.title ~ '</em>' %}
+{% block content %}
+	{% set entries = craft.entries.relatedTo(tag).order('title') %}
+	{{ parent() }}
+{% endblock %}

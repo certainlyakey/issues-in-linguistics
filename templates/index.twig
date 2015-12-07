@@ -1,0 +1,110 @@
+{#
+ # Homepage template
+ # ---------------
+ #
+ # When this template gets loaded, it will be because someone has accessed
+ # http://yoursite.com/ (without any URI). Craft checks to see if you have
+ # a Single section set to be the Homepage (as you do, by default), and
+ # loads the section’s Template (this file). A special ‘entry’ variable
+ # will already be set for you, assigned to the Homepage entry.
+ #
+ # It's worth noting that even if you didn't have a Homepage Single section,
+ # as long as this template remains at craft/templates/index.html, it
+ # would still be the one to get loaded when accessing http://yoursite.com/,
+ # albeit without an ‘entry’ variable already set for you.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+{% block head macros.title( siteName, 'Добро пожаловать на сайт журнала ' ) %}
+{% extends "_layout" %}
+{% set body_class = "home" %}
+
+{% block header %}
+	<header class="header">
+		<div class="header-inner">
+			<div class="header_top_right">
+				<a href="/subscribe" class="button subscribe">Подписаться</a>
+			</div>
+			<h1><a href="{{ siteUrl }}">{{ siteName }}</a></h1>
+			<div class="header_home">
+				{% spaceless %}
+					<ul class="rubrics">
+						{% nav rubric in craft.categories.group('rubrics').level(0).limit(5) %}
+							<li>
+								<a href="{{ rubric.url }}">{{ rubric.title }}</a>
+								{% ifchildren %}
+									<ul>
+										{% children %}
+									</ul>
+								{% endifchildren %}
+							</li>
+						{% endnav %}
+					</ul>
+
+					<ul class="years-list">
+						{% set years = range(now.year, 1952) %}
+						{% for year in years %}
+							<li><a href="/pubs/?year={{ year }}">{{ year }}</a></li>
+						{% endfor %}
+						{#
+						{% set newArray = [] %}
+						{% for issue in craft.entries.section('pubs').year.order('year desc') %}
+							{% if issue.year not in newArray %}
+								<li><a href="/pubs/?year={{ issue.year }}">{{ issue.year }}</a></li>
+								{% set newArray = newArray|merge([issue.year]) %}
+							{% endif %}
+						{% endfor %}
+						#}
+					</ul>
+				{% endspaceless %}
+				{% include '_partials/searchform.twig' %}
+			</div>
+		</div>
+	</header>
+{% endblock %}
+
+{% block sidebar_left %}
+
+	{% include '_partials/mainmenu.twig' %}
+
+{% endblock %}
+
+{% block sidebar_right %}{% endblock %}
+
+{% block content %}
+
+	{{ entry.body }}
+
+{% endblock %}
+
+{% block content_after %}
+	<section class="entries-full-width">
+		<h1><a href="{{ siteUrl }}news">Последние новости</a></h1>
+		<ul>
+			{% set entries = craft.entries.section('news').limit(4) %}
+			{% set entries_aside = [] %}
+			{% set entries_main = [] %}
+			{% set entries_main = entries_main|merge([entries[0], entries[1]]) %}
+			{% set entries_aside = entries_aside|merge([entries[3], entries[2]]) %}
+			{% for entry in entries_aside %}
+				<li>
+					<article>
+						{{ macros.thumbnail( entry, true, 'thumbnail_sm' ) }}
+						{% include 'news/_meta-index.twig' %}
+						<h1><a href="{{ entry.url }}">{{ entry.title }}</a></h1>
+						{{ macros.getBodyBeforeCut(entry) }}
+					</article>
+				</li>
+			{% endfor %}
+			{% for entry in entries_main %}
+				<li>
+					<article>
+						<h1><a href="{{ entry.url }}">{{ entry.title }}</a></h1>
+						{{ macros.getBodyBeforeCut(entry) }}
+					</article>
+				</li>
+			{% endfor %}
+		</ul>
+	</section>
+{% endblock %}

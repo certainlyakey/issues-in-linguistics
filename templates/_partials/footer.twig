@@ -1,0 +1,8 @@
+{% include '_partials/mainmenu.twig' %}
+
+<div class="right">
+	{{ generalInfo.body }}
+</div>
+
+{% include '_partials/searchform.twig' %}
+Copyright {{ now.year }} {{ craft.request.serverName | ucfirst }}. All rights reserved<br> Built with <a href="http://buildwithcraft.com">Craft</a>

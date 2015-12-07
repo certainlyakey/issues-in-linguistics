@@ -1,0 +1,20 @@
+{#
+ # News tag template
+ # -------------------
+ #
+ #}
+
+{% set tag = craft.tags.group('tags').title(tag).first() %}
+{% if not tag %}
+	{% exit 404 %}
+{% endif %}
+
+{% extends "news/index" %}
+{% set body_class_modifiers = "not-main-archive" %}
+{% block head macros.title( siteName, 'Новости — тег ' ~ tag.title ) %}
+{% set pageheading = 'Новости' %}
+{% set pageheading_suffix = ' тег <em>' ~ tag.title ~ '</em>' %}
+{% block content %}
+	{% set entries = craft.entries.relatedTo(tag).order('title') %}
+	{{ parent() }}
+{% endblock %}

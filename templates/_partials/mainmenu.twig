@@ -1,0 +1,15 @@
+{% set menuItems = craft.entries.section('mainMenu') %}
+<nav class="mainmenu">
+	<ul>
+		{% nav menuItem in menuItems %}
+			<li>
+				<a href="/{{ menuItem.externalLink ? menuItem.externalLink : menuItem.entryLink.first().uri }}">{{ menuItem.title }}</a>
+				{% ifchildren %}
+					<ul>
+						{% children %}
+					</ul>
+				{% endifchildren %}
+			</li>
+		{% endnav %}
+	</ul>
+</nav>

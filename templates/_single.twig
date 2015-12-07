@@ -1,0 +1,15 @@
+{#
+ # Single template
+ # -------------------
+ #}
+
+{% extends "_layout" %}
+{% set body_class = "single" %}
+{% block head macros.title( siteName, entry.title ) %}
+{% set pageheading = entry.title %}
+
+{% block content %}
+	{% block content_prefix %}{% endblock %}
+	{% block content_body %}{{ entry.body }}{% endblock %}
+	{% block content_suffix %}{% endblock %}
+{% endblock %}

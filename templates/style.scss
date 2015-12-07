@@ -1,0 +1,661 @@
+/*
+Theme Name:   Issues
+Theme URI:    http://www.issuesinlinguistics.ru/
+Description:  A theme for Issues in Linguistics
+Version:      0.1
+Author:       Alexander Belyaev
+Author URI:   http://podojdi.ru
+*/
+
+@import 'bourbon';
+@import 'scss/normalize.scss';
+@import 'scss/library.scss';
+
+
+// !Constants
+$color:hsl(218,16%,46%);
+$color-link:hsl(332, 24%, 63%); 
+$color-light:hsl(220,14%,70%);
+$color-lightest:hsl(220, 57%, 83%);
+$color-lighter:hsl(219, 23%, 63%);
+$color-dark:hsl(217, 20%, 41%);
+$color-acc:hsl(30, 96%, 77%);
+$color-bg:hsl(222,55%,94%);
+$color-bg-header:hsl(343,23%,68%);
+$color-gray:hsl(120,1%,58%);
+$color-gray-dark:#9da0a2;
+$color-gray-lightest:lighten($color-lighter, 19%);
+
+$ff:'Arno Pro', Georgia, Times New Roman, serif;
+$ff-ss:'Oswald', Arial Black, Arial, sans-serif;
+$fs:16px;
+$fs-lg-xxx:60px;
+$fs-lg-xx:43px;
+$fs-lg-x:27px;
+$fs-lg:22px;
+$fs-sm-x:14px;
+$fs-sm-xx:11.5px;
+$lh:20px;
+$lh-lg-x:30px;
+$lh-lg-xx:40px;
+$lh-lg-xxx:50px;
+
+$ux:10px;
+$uy:6px;
+
+$mainwidth:990px;
+$leftcol_w:125px;
+$rightcol_w:230px;
+$gutter:44px;
+
+$data-striped-line: 'data:image/gif;charset=utf-8;base64,R0lGODlhEwAEALMAANfe7bvF2dTb68zU5eXq9qq2zbXA1cbP4aSxydzi8Nfe7LC70eLn9MHK3efs+AAAACH5BAAAAAAALAAAAAATAAQAAAQh0DkVjGrn5gakn0jRLM1YksLnJAhJmvCgMkxC2/XNEGoEADs=';
+$imgpath:'/craft/public/images/template';
+$fontpath:'/craft/public/fonts';
+
+
+// !Reusable mixins
+@mixin setlinkstyling {}
+@mixin unsetlinkstyling {}
+@mixin pseudounderline($color, $weight:1px, $shift:1px) {
+	& {position:relative;}
+	&:before {@extend %pseudoblockelement; @include size( 100% 0 ); border-bottom:$weight solid $color; bottom:$shift; left:0; z-index:-1; }
+	&:hover {text-decoration:none;}
+	&:hover:before {display:none;}
+}
+
+
+// !Design mixins
+
+//requires bourbon and strip-units function (library.scss)
+@mixin recolorable-arrow($width, $height, $fill:$color, $prop:'background-image') {
+	$fill: rgba($fill,.99);
+	#{$prop}: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 #{strip-units($width)} #{strip-units($height)}" preserveAspectRatio="xMidYMid meet"><polygon points="0,3.2 10.1,3.2 8.4,0.8 9.5,0 12.2,3.8 9.5,7.6 8.5,6.7 10.2,4.2 0,4.2 " fill="#{$fill}" /></svg>');
+}
+
+// !Reusable extends
+.hidden {display:none;}
+%full-width-link {
+	a {display:block; @include size( 100% );}
+}
+.inline-list {@extend %comma-separated-list; 
+	h1, ul {display:inline;}
+	li:last-child:after {content:'.'; }
+}
+
+
+// !Design extends
+	// !Variables
+
+%article-anons-heading {@extend %textcoloredlink; @extend %underlinedhover; margin-top:21px; margin-bottom:20px; }
+%small-section-heading {font-family:$ff-ss; font-size:$fs-sm-xx; color:$color; text-decoration:none; text-transform:uppercase; margin-bottom:22px; display:inline-block; @include pseudounderline(white, 1px, 2px);}
+%thumbnail-small {float:right; margin-left:$ux; margin-bottom:$uy*2; 
+	img {@include filter(sepia(1) hue-rotate(175deg)); display:block; transition:filter .15s;}
+	&:hover {img {@include filter(sepia(0) hue-rotate(0deg)); transition:filter .3s;}}
+	figcaption {display:none;}
+}
+%anons-article {margin-bottom:43px; 
+	&>h1 {font-size:$fs-lg; @include hyphens(auto); @extend %article-anons-heading; }
+}
+%header-bg {background:url(#{$imgpath}/header-bg-full.jpg) no-repeat fixed 0 0 $color-bg-header;}
+
+
+// !CSS utilities
+@include font-face("Oswald", "#{$fontpath}/oswald/oswald-extralight", 200, $file-formats: ttf woff2 woff);
+@include font-face("Oswald", "#{$fontpath}/oswald/oswald-extra-lightitalic", 200, italic, $file-formats: ttf woff2 woff);
+@include font-face("Oswald", "#{$fontpath}/oswald/oswald-medium", normal, $file-formats: ttf woff2 woff);
+@include font-face("Oswald", "#{$fontpath}/oswald/oswald-mediumitalic", normal, italic, $file-formats: ttf woff2 woff);
+
+
+// !Scaffold styles
+body {@include baseline-grid($lh);}
+// .pubs-filter {display:none; }
+
+
+// !Universal styles
+body {font:$fs/#{$lh} $ff; background-color:$color-bg; color:$color; }
+a {color:$color-link; text-decoration:none;}
+.right {float:right;}
+
+/* ============================================================================
+	
+Header 
+	
+============================================================================ */
+
+//Variables
+$header_h_compact:80px;
+
+//Reusable modules
+.button {
+	$button-rs:5px;
+	$button-bdr-inner-w:1px;
+	$button-bdr-space:2px;
+	$button-bdr-outer-w:2px;
+	display:inline-block; font-family:$ff-ss; font-size:$fs-sm-xx; text-transform:uppercase; padding:3px 32px 3px; border-radius:$button-rs; border:$button-bdr-inner-w solid currentColor; text-decoration:none; color:white; position:relative; @extend %button-pressed;
+	&:before {@extend %pseudoblockelement; top:-$button-bdr-space - $button-bdr-outer-w; left:-$button-bdr-space - $button-bdr-outer-w; @include calc(width, '100% + #{$button-bdr-space} + #{$button-bdr-outer-w}'); @include calc(height, '100% + #{$button-bdr-space} + #{$button-bdr-outer-w}'); border:$button-bdr-outer-w solid currentColor; border-radius:$button-rs + 2px;}
+}
+.searchform {position:relative; top:2px; 
+	input[type=search] {text-transform:uppercase; font-family:$ff-ss; font-style:italic; background-color:transparent; font-size:$fs-sm-x; padding-left:22px; color:$color-acc; border:none; border-bottom:1px solid white; border-radius:0 0 0 6px; position:relative; top:3px; right:-3px; width:206px; }
+	input[type=submit] {font-size:$fs-sm-xx; border:1px solid white; background:none; text-transform:uppercase; font-family:$ff-ss; color:white; border-left:none; border-radius:6px 6px 6px 0; padding:4px 10px; 
+	}
+	&.invert {
+		input[type=search] {color:$color-lightest; }
+		input[type=submit] {background-color:$color-lighter; }
+	}
+}
+
+//Local applies and changes 
+
+
+//Local modules
+.header {
+	@include size( 100% $header_h_compact ); @extend %header-bg; background-position:0 -106px; clear:both; border-bottom:4.5px solid white; padding-bottom:83px; position:relative; 
+	h1 {background:url(#{$imgpath}/logo.svg) no-repeat; @include size( 210px 44px ); @extend %full-width-link; margin-left:-2px; }
+	.header-inner {width:$mainwidth; margin:0 auto; padding-top:16px; }
+	.header_top_right {float:right; padding-top:6px; 
+		.subscribe {margin-left:50px; }
+	}
+	.searchform {display:inline-block;}
+}
+
+
+/* ============================================================================
+	
+Content area 
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+.content-outer {
+	width:$mainwidth; margin:0 auto; clear:both; padding:60px $rightcol_w + $gutter*2 0 $leftcol_w + $gutter; 
+}
+
+
+/* ============================================================================
+	
+Footer 
+	
+============================================================================ */
+
+//Variables
+$f_leftcol_w:210px;
+$f_rightcol_w:$rightcol_w;
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+.footer {clear:both; background-color:$color-dark; color:white; font-family:$ff-ss; font-weight:200; font-size:$fs-sm-xx; margin-top:47px; 
+	a {color:$color-acc; text-decoration:underline;}
+	.footer-inner {width:$mainwidth; margin:0 auto; padding-top:39px; padding-bottom:67px; text-align:center;}
+	.mainmenu {line-height:$lh-lg-x; float:left; text-transform:uppercase; width:$f_leftcol_w; text-align:left; margin-right:-$f_leftcol_w; position:relative; z-index:1; 
+		li {display:inline-block; position:relative; margin-right:$ux;}
+		a {color:$color-light; z-index:0; @include pseudounderline($color-light, 1px); text-decoration:none;}
+		li>ul {display:none;}
+	}
+	em {font-style:normal; color:$color-lightest;}
+	.right {color:$color-acc; text-align:right; width:$f_rightcol_w; margin-left:-$f_rightcol_w; 
+		em {color:$color-lightest;}
+	}
+	.searchform {@extend .invert; margin-bottom:34px;}
+}
+
+/* ============================================================================
+	
+Left sidebar
+	
+============================================================================ */
+
+//Variables
+$sidebar-left-pr:16px;
+$single-vrez-w:$leftcol_w;
+
+//Reusable modules
+.thumbnail {position:relative;
+	&:before {@extend %pseudoblockelement; @include size( 100% ); top:0; left:0; z-index:1; box-shadow:0 0 3px $color-gray inset;}
+}
+
+
+.widget {margin-top:33px; 
+	&:first-child {margin-top:0; }
+	&>h1:first-child {font-size:$fs-sm-xx; text-transform:uppercase; font-family:$ff-ss; color:$color-lighter;
+		a {text-decoration:none; color:inherit;}
+		a:before {content:''; @include size( 12px 9px ); float:right; background:url(#{$imgpath}/sm_arr-right.svg) no-repeat; position:relative; top:5px; }
+	}
+	&.widget_text .widget_content {@include hyphens(auto); color:$color-gray;}
+	.widget_content {
+		margin-top:42px;
+		article {@extend %anons-article;}
+	}
+	.thumbnail {@extend %thumbnail-small;}
+}
+
+.rubric-list {@extend %comma-separated-list;}
+.meta { 
+	font-size:$fs-sm-xx; font-family:$ff-ss; @extend %underlinedhover; // @extend %comma-separated-list; 
+	time {color:$color-acc; display:block;}
+	.rubric-list {
+		h1 {cursor:default; }
+		h1, ul {display:inline;}
+	}
+	.timed {color:$color-link; }
+}
+.meta.-index {
+	.rubric-list {
+		h1 {color:$color-gray-lightest;}
+		a {color:$color-link;}
+	}
+}
+.meta.-single {float:right; width:$single-vrez-w; text-align:right; margin-left:$ux; 
+	.rubric-list {
+		h1, ul {color:$color-lighter;}
+		a {color:$color;}
+	}
+	time {font-size:$fs; letter-spacing:.4px; }
+}
+%mainmenu-sidebar {font-family:$ff-ss; text-transform:uppercase; color:$color-light; padding-top:26px; padding-bottom:16px; border-right:1px solid $color-lightest; padding-right:$sidebar-left-pr; @extend %textcoloredlink; 
+	&>ul>li {margin-top:22px; @extend %reset-firstitem-margin-y;
+		&>a {@include pseudounderline(lighten($color-acc, 10%), 2px);}
+		ul {margin-left:$ux; }
+		& li {font-weight:200; font-size:$fs-sm-xx; margin-top:9px; 
+			&:first-child {margin-top:12px;}
+			&:last-child {margin-bottom:-5px;}
+			&>a {@include pseudounderline(white, 1px, -2px);}
+		}
+		.active a {color:$color-link; }
+	}
+}
+
+//Local applies and changes 
+
+
+//Local modules
+.sidebar-left {float:left; width:$leftcol_w; margin-left:-$leftcol_w - $gutter; 
+	.widget {padding-right:$sidebar-left-pr;}
+	.parent_link {@extend %small-section-heading;}
+	.mainmenu {@extend %mainmenu-sidebar;}
+}
+
+
+/* ============================================================================
+	
+Right sidebar
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+.sidebar-right {float:right; width:$rightcol_w; margin-right:-$rightcol_w - $gutter*2; }
+
+
+/* ============================================================================
+	
+Home page view
+	
+============================================================================ */
+
+//Variables
+$header_home_left_w:258px;
+$header_home_left_gutter:80px;
+$header_home_s_w:270px;
+
+//Reusable modules
+.entries-full-width {clear:both; 
+	&>h1 {@extend %small-section-heading; background-color:$color-bg; z-index:2; color:$color-lighter; @extend %textcoloredlink;
+		a {position:relative; z-index:0; 
+			&:before {@extend %pseudoblockelement; @include calc(width, '100% + #{$ux*3}'); height:27px; background-color:$color-bg; left:0; top:-13px; z-index:-1; }
+		}
+		&:after {@extend %pseudoblockelement; @include size( $mainwidth 1px ); background-color:$color-lightest; left:0; top:11px; z-index:-1; }
+	}
+	&>ul {
+		&>li {
+			//"third"
+			&:nth-child(2) {margin-right:48px;}
+			//"fourth" and "third"
+			&:nth-child(1), &:nth-child(2) {width:230px; float:right; 
+				article {@extend %anons-article;}
+				.thumbnail {@extend %thumbnail-small;}
+			}
+			//"first" and "second"
+			&:nth-child(3), &:nth-child(4) {
+				margin-right:94px; width:388px; 
+				article>h1 {@extend %article-anons-heading; font-size:$fs-lg-x; line-height:$lh-lg-x; }
+			}
+			//"first"
+			&:nth-child(3) {position:relative; margin-bottom:56px; 
+				&:before {@extend %pseudoblockelement; @include size( 1px 240px ); background-color:white; right:-63px; top:45px;}
+				&:after {@extend %pseudoblockelement; @include size( 146px 3px ); background-color:$color-lightest; bottom:-34px; left:0;  }
+				article>h1 {font-weight:bold; font-size:31px; }
+			}
+		}
+	}
+}
+
+
+//Local applies and changes 
+
+
+//Local modules
+body.home {
+	header {background-position:left 0; @include size( 100% 319px ); padding-bottom:54px; 
+		&:before {@extend %pseudoblockelement; @include size( 100% 2px ); background-color:hsl(274, 100%, 94%); opacity:.8; top:$header_h_compact - 2px; left:0; }
+		.header_home {padding:70px 0 30px $header_home_left_w + $header_home_left_gutter; position:relative; 
+			.rubrics {float:left; width:$header_home_left_w; margin-left:-$header_home_left_w - $header_home_left_gutter; text-align:right; color:lighten($color-link, 20%); @extend %comma-separated-list; @extend %textcoloredlink; font-weight:bold; text-transform:lowercase;
+				a:hover {color:white; }
+			}
+			.years-list {overflow:hidden; max-height:$lh*3; line-height:18px; position:absolute; @extend %header-bg; z-index:1; @include font-feature-settings("onum"); transition:max-height .3s cubic-bezier(0,0,0.7,1.58) 1.4s;
+				&:hover {max-height:$lh*7; transition:max-height .4s cubic-bezier(0.22, 0.61, 0.36, 1);}
+				li {display:inline-block; width:56px; font-size:$fs-lg; letter-spacing:-1px; 
+					a {display:inline-block; padding:1px 4px 0; color:white; border-radius:2px; }
+					&:first-child a, a:hover {color:$color-link; background-color:white; }
+				}
+			}
+			.searchform {position:absolute; bottom:-101px; top:auto; width:$header_home_s_w; left:50%; margin-left:-$header_home_s_w/2; 
+				input[type=search] {font-size:$fs; text-align:center; top:1px; padding-bottom:4px; }
+				input[type=submit] {padding:6px 12px;
+					&:active {padding:7px 12px 5px;}
+				}
+			}
+		}
+	}
+	.content-outer {padding:0; 
+		.mainmenu {@extend %mainmenu-sidebar; border-right:none; padding-top:26px + 6px; float:left; 
+			&>ul>li {margin-top:20px;}
+		}
+	}
+	.content {font-size:19px; letter-spacing:.2px; line-height:$lh-lg-x; padding:44px 95px 0 340px; }
+	.entries-full-width {padding-top:35px; }
+}
+
+
+/* ============================================================================
+	
+Single entry view
+	
+============================================================================ */
+
+//Variables
+$arr_w:34px;
+$arr_h:23px;
+
+
+//Reusable modules
+.pagetitle {font-size:$fs-lg-xxx; font-weight:bold; line-height:$lh-lg-xxx; letter-spacing:-.2px; margin-bottom:36px;}
+body.single.publications .pagetitle {@include hyphens(auto);}
+body.archive.not-main-archive, body.single.publications.emptycontent, body.single.publications.review {
+	.pagetitle {font-size:$fs-lg-xx; line-height:$lh-lg-xx; }
+}
+.pagetitle_suffix {font-family:$ff-ss; font-size:30px; font-weight:normal; position:relative; padding-left:6px + $arr_w + 8px; 
+	em {font-style:normal; color:$color-acc;}
+	&:before {
+		@extend %pseudoblockelement; background-repeat:no-repeat; width:91px; height:57px; @include recolorable-arrow($arr_w, $arr_h, $color-gray); top:1px; left:6px;  }
+}
+// .meta.-single + .pagetitle {padding-right:$single-vrez-w; }
+
+//Local applies and changes 
+
+
+//Local modules
+body.single {
+	.content {@extend %underlinedhover; margin-bottom:$uy*10; 
+		.thumbnail {position:relative; margin-bottom:38px; 
+			figcaption {position:absolute; background-color:$color-dark; color:$color-lightest; font-family:$ff-ss; font-weight:200; font-size:$fs-sm-xx; bottom:0; left:0; width:100%; padding:$uy*2 $ux*2; z-index:2; 
+			}
+			img {display:block; }
+			&:hover figcaption {color:white;}
+		}
+		p, ul, ol {margin:$uy 0; }
+		@include headings(2) {font-weight:bold; margin-top:$uy*6; margin-bottom:$uy*3;}
+		h2 {font-size:$fs-lg-x;}
+		h3 {font-size:$fs-lg-x;}
+		h4 {font-size:$fs-lg;}
+		blockquote {border-radius:5px; padding:$uy*2 $ux*2; border:6px solid hsl(222, 22%, 81%); background-color:#bac3d4; font-style:italic; color:white; margin:$uy*6  0;}
+	}
+}
+
+
+/* ============================================================================
+	
+Archive view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+.content {
+	em, i {color:$color-lighter; }
+	.post-item {
+		.meta {float:left; margin-right:25px; padding-right:10px; border-right:$color-lightest 1px solid; margin-top:9px; max-width:$rightcol_w; }
+		&>h1 {@extend %textcoloredlink; @extend %underlinedhover; @extend %article-anons-heading; font-size:$fs-lg-x; line-height:$lh-lg-x; }
+	.thumbnail {@extend %thumbnail-small;}
+	}
+}
+
+.pagination {@include clearfix; margin-bottom:45px; 
+	.prev, .next {background:url(#{$imgpath}/sm_arr-right.svg) no-repeat; @include size( 30px 20px ); background-size:100% 100%; }
+	.prev {float:left; @include transform(scaleX(-1));}
+	.next {float:right;}
+}
+
+
+//Local applies and changes 
+
+
+//Local modules
+body.archive {
+	.content {
+		.post-item {margin-bottom:39px; 
+			.readmore {display:none;}
+		}
+	}
+	&:not(.not-main-archive) {
+		.post-item:first-child {
+			.meta {display:none;}
+			&>h1 {font-size:$fs-lg-xx; line-height:$lh-lg-xx; font-weight:bold; margin-top:0; margin-bottom:34px; }
+			.readmore {font-family:$ff-ss; font-size:$fs-sm-xx; margin-top:35px; display:block; text-align:right; position:relative; text-transform:uppercase; display:inline-block; width:100%; 
+
+				//JS on
+				.wrapper {position:relative; background-color:$color-bg; padding-left:15px; }
+				&:before, .wrapper:before {@extend %pseudoblockelement; background:url(#{$imgpath}/border-slashed.png) no-repeat; left:0;}
+				&:before {@include size( 421px 4px ); bottom:5px;}
+				.wrapper:before {@include size( 100% 4px ); bottom:-2px; background-position:15px - 2px 0; }
+			}
+		}
+	}
+}
+
+
+/* ============================================================================
+	
+Single pub view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+.meta.-pubs.-single {
+	.pubdate {
+		font-family:$ff-ss; color:$color-link; font-size:$fs; 
+	}
+}
+.subhead-info {color:$color-gray; font-style:italic; border-top:$color-lighter 1px solid; @extend %textcoloredlink; @extend %underlinedhover; padding-top:6px; margin-top:-10px; margin-bottom:34px; }
+.elastic-button {
+
+	#{$js-on} {
+		display:block; text-align:right; color:$color-gray; position:relative; font-family:$ff-ss; font-size:$fs-sm-xx; text-transform:uppercase; 
+		&:hover {text-decoration:none !important;}
+		.wrapper {@include pseudounderline($color-link, 2px); padding-left:$ux*2; background-color:$color-bg; letter-spacing:.4px;
+			&:before {@include calc(width, '100% - #{$ux*2}'); left:auto; right:0; z-index:0;}
+		}
+		&:before {@extend %pseudoblockelement; @include size( 100% 4px ); background:url($data-striped-line) repeat-x; top:9px; }
+	}
+}
+
+
+//Local applies and changes 
+
+
+//Local modules
+body.single .content {
+	.keywords {margin-bottom:40px; padding-top:3px; 
+		&>h1 {font-style:italic; color:$color-lighter; }
+	}
+}
+
+
+
+/* ============================================================================
+	
+Single page view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+
+
+/* ============================================================================
+	
+Archive (categories) view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+
+
+
+/* ============================================================================
+	
+Pubs archive view
+	
+============================================================================ */
+
+//Variables
+$filter-mt:50px;
+
+
+//Reusable modules
+.post-item .keywords {border-radius:2px; border:1px white solid; padding:$uy $ux*2; @extend %textcoloredlink; @extend %underlinedhover;
+	h1 {color:$color-gray-lightest; font-style:italic; }
+}
+.meta.-index + .keywords {
+	margin-left:$rightcol_w; margin-bottom:$uy*2; 
+}
+
+.pubs-filter {margin-bottom:42px; 
+	&>h1 {margin-bottom:22px; }
+	.status {font-style:italic; color:$color-lighter; }
+	#{$js-on} {
+		nav {text-align:right; position:relative; border-right:1px solid $color-gray-dark;
+			li {display:inline-block; position:relative; font-family:$ff-ss; font-size:$fs-sm-xx; text-transform:uppercase; border-left:$color-lightest 1px solid;
+				&:before {@extend %pseudoblockelement; position:absolute; top:0; @include size( 4.5px ); left:-1px; @include linear-gradient(to left top, white, white 2px, $color-lightest 3px, $color-bg 3px, $color-bg);}
+				a {display:block; padding:6px 27px 4px; color:$color; background-color:white;
+				}
+				&:not(.active)>a:hover {color:$color-link; }
+				&:not(.active)>a:active {color:$color-dark; }
+				&.active {position:absolute; left:0; text-align:left; border:$color-lightest 1px solid; border-bottom:none; text-shadow:0 1px 0 $color-acc; 
+					&:before {@include linear-gradient(to right top, $color-bg, $color-bg 2px, $color-lightest 3px, $color-bg 3px, $color-bg); right:-1px; left:auto; top:-1px;}
+					a {background-color:transparent; cursor:default; }
+				}
+			}
+		}
+		&>ul {
+			border-right:1px solid $color-gray-dark; border-bottom:1px solid $color-gray-dark; border-left:$color-lightest 1px solid; border-top:4.5px solid $color-link; padding:21px 20px; position:relative; text-align:center; line-height:31px; 
+			li {display:inline-block; margin-left:$ux + 6px; margin-right:$ux + 6px;
+				a {border:1px solid white; border-radius:3px; padding:4px 4px 0; 
+					&:hover {color:$color-lighter; }
+					em {color:inherit; }
+				}
+				ul {display:inline-block;}
+				li {margin-left:$ux; margin-right:$ux;}
+			}
+			li+li {margin-left:0;}
+			h2, &>li {display:none;}
+			&>li.active {display:block;}
+		}
+	}
+}
+
+//Local applies and changes 
+
+
+//Local modules
+
+
+/* ============================================================================
+	
+Archive (tags) view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+
+
+/* ============================================================================
+	
+Search results view
+	
+============================================================================ */
+
+//Variables
+
+
+//Reusable modules
+
+
+//Local applies and changes 
+
+
+//Local modules
+
+

@@ -1,0 +1,22 @@
+{#
+ # Search results template
+ # -------------------
+ #}
+
+{% set query = craft.request.getParam('q') %}
+{% set entries = craft.entries.search(query).order('score') %}
+{% set body_class_modifiers = "not-main-archive" %}
+
+{% extends "_archive" %}
+{% block head macros.title( siteName, 'Search results' ) %}
+{% set pageheading = 'Поиск по фразе' %}
+{% set pageheading_suffix = ' <em>' ~ query ~ '</em>'	 %}
+
+
+{% block post_item_meta %}
+	{% if entry.section.handle == 'pubs' %}
+		{% include entry.section.handle ~ '/_meta-index.twig' %}
+	{% elseif entry.section.handle == 'news'  %}
+		{% include entry.section.handle ~ '/_meta-index.twig' %}
+	{% endif %}
+{% endblock %}

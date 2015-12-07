@@ -1,0 +1,29 @@
+{#
+ # Rubrics index template
+ # -------------------
+ #
+ # This template is loaded whenever rubrics archive is
+ # requested.
+ #
+ #}
+{% set url_news = craft.request.getParam('news') %}
+
+{% if url_news %}
+	{% set section_type = 'news' %}
+{% else %}
+	{% set section_type = 'pubs' %}
+{% endif %}
+
+{% set entries = craft.entries.section(section_type).relatedTo(category).limit(generalOptions.entriesPerPage) %}
+{% extends section_type ~ '/index' %}
+{% set body_class_modifiers = "not-main-archive" %}
+{% block head macros.title( siteName, 'Рубрика ' ~ category.title ) %}
+{% set pageheading_suffix = ' <em>' ~ category.title ~ '</em>'  %}
+
+{% block parent_link %}
+	{% if url_news %}
+		<a class="parent_link" href="{{ siteUrl }}news">Все новости</a>
+	{% else %}
+		<a class="parent_link" href="{{ siteUrl }}pubs">Все публикации</a>
+	{% endif %}
+{% endblock %}

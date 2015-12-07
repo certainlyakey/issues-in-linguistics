@@ -1,0 +1,78 @@
+<section class="pubs-filter">
+	{% spaceless %}
+	<h1>Как вы хотите отобрать публикации? &mdash; <output class="status"></output></h1>
+	<nav>
+		<ul>
+			<li><a href="#issues">По выпуску</a></li>
+			<li><a href="#rubrics">По рубрике</a></li>
+			<li><a href="#languages">По языку</a></li>
+			<li><a href="#authors">По автору</a></li>
+	</ul>
+	</nav>
+	<ul>
+		<li id="issues"><h2>По выпуску</h2>
+			<ul>
+				{% set years_with_pubs = [] %}
+				{% for issue in craft.entries.section('pubs').year.order('year desc') %}
+					{% if issue.year not in years_with_pubs %}
+						<li>
+							<a href="/pubs/?year={{ issue.year }}">{{ issue.year }}</a>
+							<ul>
+								{% set issues_this_year = [] %}
+								{% for issue_this_year in craft.entries.section('pubs').year(issue.year).order('issueNumber desc') %}
+									{% if issue_this_year.issueNumber not in issues_this_year %}
+										<li>
+											<a href="/pubs/?year={{ issue.year }}&issueNumber={{issue_this_year.issueNumber}}">{{issue_this_year.issueNumber}}</a>
+										</li>
+										{% set issues_this_year = issues_this_year|merge([issue_this_year.issueNumber]) %}
+									{% endif %}
+								{% endfor %}
+							</ul>
+						</li>
+						{% set years_with_pubs = years_with_pubs|merge([issue.year]) %}
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</li>
+		<li id="rubrics"><h2>По рубрике</h2>
+			<ul>
+				{# get only the cats with entries #}
+				{% set entryIds = craft.entries.section('pubs').ids() %}
+				{% set rubrics = craft.categories.relatedTo({ sourceElement: entryIds }).group('rubrics').find() %}
+				{% nav rubric in rubrics %}
+					<li>
+						<a href="{{ rubric.url }}">{{ rubric.title }}</a>
+						{% ifchildren %}
+							<ul>
+								{% children %}
+							</ul>
+						{% endifchildren %}
+					</li>
+				{% endnav %}
+			</ul>
+		</li>
+		<li id="languages"><h2>По языку</h2>
+			<ul>
+				{% set languages = craft.categories.relatedTo({ sourceElement: entryIds }).group('languages').find() %}
+				{% nav language in languages %}
+					<li>
+						<a href="{{ language.url }}">{{ language.title }}</a>
+						{% ifchildren %}
+							<ul>
+								{% children %}
+							</ul>
+						{% endifchildren %}
+					</li>
+				{% endnav %}
+			</ul>
+		</li>
+		<li id="authors"><h2>По автору</h2>
+			<ul>
+				{% for tag in craft.tags.group('authors') %}
+					<li><a href="{{ url('author/'~tag.title) }}">{{ tag.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+	</ul>
+	{% endspaceless %}
+</section>

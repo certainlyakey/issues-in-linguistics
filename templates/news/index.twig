@@ -1,0 +1,29 @@
+{#
+ # News index template
+ # -------------------
+ #
+ # This template is loaded whenever http://example.com/news is
+ # requested, because it is located at news/index.html in your
+ # craft/templates/ folder.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% if category is not defined %}
+	{% set entries = craft.entries.section('news').limit(generalOptions.entriesPerPage) %}
+{% endif %}
+
+
+{% extends "_archive" %}
+{% block head macros.title( siteName, 'News' ) %}
+{# {% set pageheading = "News" %} #}
+
+{% block parent_link %}
+	<a class="parent_link" href="{{ siteUrl }}news">Все новости</a>
+{% endblock %}
+
+
+{% block post_item_meta %}
+	{% include 'news/_meta-index.twig' %}
+{% endblock %}

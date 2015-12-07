@@ -1,0 +1,101 @@
+{% macro thumbnail(entryModel, isFigure, transformName="", className="thumbnail") %}
+	{% set thumbnails = entryModel.thumbnail %} {# array #}
+
+	{% if thumbnails | length %}
+		{% set thumbnail = thumbnails.first() %} 
+
+		{# assumes these handles for the fields #}
+		{% if thumbnail.alt %}
+			{% set alt = thumbnail.alt %} 
+		{% else %}
+			{% set alt = thumbnail.title %} 
+		{% endif %}
+		{% if thumbnail.caption %}
+			{% set caption = thumbnail.caption %} 
+		{% else %}
+			{% set caption = thumbnail.title %} 
+		{% endif %}
+
+		{% if isFigure %}
+			<figure class="{{ className }}">
+		{% endif %}
+
+		<img src="{{ thumbnail.getUrl(transformName) }}" width="{{ thumbnail.getWidth(transformName) }}" height="{{ thumbnail.getHeight(transformName) }}" alt="{{ alt }}"{{ (isFigure ? '' : ' class="' ~ className ~ '"')|raw }}>
+
+		{% if isFigure %}
+			{% if caption %}
+				<figcaption>{{ caption }}</figcaption>
+			{% endif %}
+			</figure>
+		{% endif %}
+
+	{% endif %}
+
+{% endmacro %}
+
+
+{% macro related_categories(entryObject, isSection=false, catGroupName='categories', className='categories', headingText='', appendToURL='', tagsFieldObject=NULL, singleTagURLBase='tag' ) %}
+	{% if tagsFieldObject %}
+		{% set categories = tagsFieldObject %}
+	{% else %}
+		{% set categories = craft.categories.group(catGroupName).relatedTo(entryObject) %}
+	{% endif %}
+
+	{% if categories | length %}
+
+		{% if isSection %}
+			<section class="{{ className }}">
+			<h1>{{headingText}}</h1>
+		{% endif %}
+
+		<ul{{ (isSection ? '' : ' class="' ~ className ~ '"')|raw }}>
+			{% for category in categories %}
+				<li><a href="{{tagsFieldObject ? siteUrl ~ singleTagURLBase ~ '/' ~ category.title | url_encode : category.url }}{{appendToURL}}">{{ category.title }}</a></li>
+			{% endfor %}
+		</ul>
+		
+		{% if isSection %}
+			</section>
+		{% endif %}
+	{% endif %}
+
+{% endmacro %}
+
+
+{% macro readmore(entryObject, text='Читать далее',className='readmore') %}
+	<a class="{{className}}" href="{{ entryObject.url }}">{{text}}</a>
+{% endmacro %}
+
+
+{% macro title(siteTitle, pageTitle='') %}
+	<title>{% if pageTitle is defined %}{{ pageTitle }} - {% endif %}{{ siteTitle }}</title>
+{% endmacro %}
+
+
+{% macro getBodyBeforeCut(entry) %}
+	{% if entry.body %}
+		{{ entry.body.getPage(1) }}
+	{% endif %}
+{% endmacro %}
+
+
+{% macro bytesToSize(bytes) %}
+{% spaceless %}
+	{% set kilobyte = 1024 %}
+	{% set megabyte = kilobyte * 1024 %}
+	{% set gigabyte = megabyte * 1024 %}
+	{% set terabyte = gigabyte * 1024 %}
+
+	{% if bytes < kilobyte %}
+		{{ bytes ~ ' б' }}
+	{% elseif bytes < megabyte %}
+		{{ (bytes / kilobyte)|number_format(0, '.','') ~ ' Кб' }}
+	{% elseif bytes < gigabyte %}
+		{{ (bytes / megabyte)|number_format(2, '.','') ~ ' Мб' }}
+	{% elseif bytes < terabyte %}
+		{{ (bytes / gigabyte)|number_format(2, '.','') ~ ' Гб' }}
+	{% else %}
+		{{ (bytes / terabyte)|number_format(2, '.','') ~ ' Тб' }}
+	{% endif %}
+{% endspaceless %}
+{% endmacro %}

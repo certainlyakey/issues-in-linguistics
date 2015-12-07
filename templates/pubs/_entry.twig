@@ -1,0 +1,52 @@
+{#
+ # Publication entry template
+ # -------------------
+ #
+ # This template gets loaded whenever a News entry’s URL is
+ # requested. That’s because the News section’s Template setting is
+ # set to “news/_entry”, the path to this template.
+ #
+ # When this template is loaded, it will already have an ‘entry’
+ # variable, set to the requested News entry.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% extends "_single" %}
+{% set body_class_modifiers = "publications" %}
+{% if entry.body is empty %}
+	{% set body_class_modifiers = body_class_modifiers ~ " emptycontent" %}
+{% endif %}
+{% if entry.reviewedAuthor %}
+	{% set body_class_modifiers = body_class_modifiers ~ " review" %}
+{% endif %}
+
+{% block parent_link %}
+	<a class="parent_link" href="{{ siteUrl }}pubs">Все публикации</a>
+{% endblock %}
+
+{% block contentheader_prefix %}
+	{% include 'pubs/_meta-entry.twig' %}
+{% endblock %}
+
+{% block content_body %}
+	{% if entry.body is empty %}
+		Сожалеем, для этой публикации контент пока не подготовлен.
+	{% else %}
+		{{ entry.body }}
+	{% endif %}
+{% endblock %}
+
+{% block contentheader_suffix %}
+	{{ macros.related_categories( entry, false, '', 'rubric-list subhead-info', '', '', entry.authorsList, 'author' ) }}
+{% endblock %}
+
+{% block content_suffix %}
+	{{ macros.related_categories( entry, true, '', 'inline-list keywords', 'Ключевые слова:', '', entry.keywords, 'keyword' ) }}
+	{% if entry.publicationFile | length %}
+		{% set publicationFile = entry.publicationFile.first() %}
+		<a class="elastic-button download" href="{{ publicationFile.url }}" title="{{ macros.bytesToSize(publicationFile.size) }}">Скачать {{ publicationFile.kind }}</a>
+	{% endif %}
+{% endblock %}
+

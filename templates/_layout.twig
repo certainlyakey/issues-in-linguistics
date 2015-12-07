@@ -1,0 +1,120 @@
+{#
+ # Layout template
+ # ---------------
+ #
+ # This template defines your site’s global layout. It can be
+ # “extended” by other templates to fill in the gaps.
+ #
+ # See Twig’s Template Inheritance documentation for more details:
+ # http://twig.sensiolabs.org/doc/templates.html#template-inheritance
+ #}
+{% import '_partials/macros' as macros %}
+
+<!DOCTYPE html>
+
+<html lang="ru-RU" class="no-js">
+<head>
+	<meta charset="utf-8">
+	{% block head %}{{ macros.title( siteName ) }}{% endblock %}
+	<!--Arno Pro-->
+	<script src="https://use.typekit.net/qbn1cel.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+	<link rel="stylesheet" href="{{ siteUrl }}style.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script> 
+	<script src="{{ siteUrl }}js/scripts.min.js"></script>
+</head>
+
+<body {% if body_class is defined %}class="{{body_class}}{% if body_class_modifiers is defined %} {{body_class_modifiers}}{% endif %}"{% endif %}>
+	<div id="outer">
+		{% block header %}
+			<header class="header">
+				<div class="header-inner">
+					<div class="header_top_right">
+						{% include '_partials/searchform.twig' %}
+						<a href="{{ siteUrl }}subscribe" class="button subscribe">Подписаться</a>
+					</div>
+					<h1><a href="{{ siteUrl }}">{{ siteName }}</a></h1>
+				</div>
+			</header>
+		{% endblock %}
+
+		<main class="content-outer" role="main">
+
+
+			{% block sidebar_left %}
+				<aside class="sidebar-left">
+					{% block parent_link %}{% endblock %}
+					{% include '_partials/mainmenu.twig' %}
+					{% set aboutus = craft.entries.id(26).first() %}
+					<article class="widget widget_text">
+						<h1><a href="{{ aboutus.url }}">{{ aboutus.title }}</a></h1>
+						<div class="widget_content">{{ macros.getBodyBeforeCut(aboutus) }}</div>
+					</article>
+				</aside>
+			{% endblock %}
+
+			
+
+			{% block sidebar_right %}
+				<aside class="sidebar-right">
+
+					<!-- Важные объявления -->
+					<section class="widget">
+						{% set importanttag = craft.tags.group('tags').id(38).first() %}
+						{% set entries = craft.entries.section('news').relatedTo(importanttag) %}
+						{% if entries | length %}
+							<h1><a href="{{siteUrl}}tag/{{ importanttag.title | url_encode }}">{{ importanttag.name }}</a></h1>
+							<div class="widget_content">
+							{% for entry in entries %}
+								<article>
+									<a href="{{ entry.url }}">{{ macros.thumbnail( entry, true, 'thumbnail_sm' ) }}</a>
+									{% include 'news/_meta-index.twig' %}
+									<h1><a href="{{ entry.url }}">{{ entry.title }}</a></h1>
+									{{ macros.getBodyBeforeCut(entry) }}
+								</article>
+							{% endfor %}
+							</div>
+						{% endif %}
+					</section>
+				</aside>
+			{% endblock %}
+
+
+
+			{# <div class="maincol"> #}
+				{% block contentheader_prefix %}{% endblock %}
+				{% if pageheading is defined %}
+					<h1 class="pagetitle">
+						{{ pageheading|raw }}
+						{% if pageheading_suffix is defined %}
+							<span class="pagetitle_suffix">{{ pageheading_suffix|raw }}</span>
+						{% endif %}
+					</h1>
+				{% endif %}
+				{% block contentheader_suffix %}{% endblock %}
+
+				<div class="content">
+				
+					{% block content %}
+
+						<p>Here lies some default content to be extended.</p>
+
+					{% endblock %}
+
+				</div>
+			{# </div> #}
+			
+			{% block content_after %}{% endblock %}
+
+
+
+		</main>
+		
+		<footer class="footer">
+			<div class="footer-inner">
+				{% include '_partials/footer.twig' %}
+			</div>
+		</footer>
+	</div>
+</body>
+</html>

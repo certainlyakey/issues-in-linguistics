@@ -1,0 +1,50 @@
+{#
+ # Pubs index template
+ # -------------------
+ #
+ # This template is loaded whenever http://example.com/pubs is
+ # requested, because it is located at news/index.html in your
+ # craft/templates/ folder.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+{% set url_year = craft.request.getParam('year') %}
+{% set url_issue = craft.request.getParam('issueNumber') %}
+
+
+{% set entries = craft.entries.section('pubs') %}
+
+{% if url_year and url_issue %}
+	{% set entries = entries.year(url_year).issueNumber(url_issue) %}
+	{% set pageheading_suffix = ' Выпуск <em>№' ~ url_issue ~ ' за ' ~ url_year ~ '</em> год' %}
+{% elseif url_year %}
+	{% set entries = entries.year(url_year) %}
+	{% set pageheading_suffix = ' <em>' ~ url_year ~ '</em> год' %}
+{% elseif category is defined %}
+	{% set entries = entries.relatedTo(category) %}
+{% endif %}
+
+{% set entries = entries.limit(generalOptions.entriesPerPage) %}
+
+
+{% extends "_archive" %}
+{% block head macros.title( siteName, 'Pubs' ) %}
+{% set pageheading = "Архив" %}
+
+{% block parent_link %}
+	<a class="parent_link" href="{{ siteUrl }}pubs">Все публикации</a>
+{% endblock %}
+
+
+{% block post_item_meta %}
+	{% include 'pubs/_meta-index.twig' %}
+{% endblock %}
+
+
+{% block content %}
+
+	{% include '_partials/pubs_filter.twig' %}
+	{{ parent() }}
+
+{% endblock %}
